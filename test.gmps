@@ -1,0 +1,37 @@
+message PriceRequest {
+	string title
+}
+message PriceResponse {
+	int price
+}
+message SplitOffer {
+	int price
+	int split
+} 
+message Accept {}
+message Quit {}
+message Retry {}
+message Done {}
+
+protocol TwoBuyersNegotiate {
+	roles { buyer1, buyer2, seller }
+
+	buyer1 -> seller: PriceRequest
+	seller -> buyer1: PriceResponse
+	loop {
+		buyer1 -> buyer2: SplitOffer
+		buyer2 -> buyer1 {
+			Accept { 
+				buyer1 -> seller: Done
+				break
+			}
+			Quit { 
+				buyer1 -> seller: Done
+				break
+			}
+			Retry { 
+				buyer1 -> seller: 
+			}
+		}
+	}
+}
